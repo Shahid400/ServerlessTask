@@ -32,14 +32,22 @@ const createEnrollment: ValidatedEventAPIGatewayProxyEvent<typeof schema> = asyn
 
     // Check if Enrollment already exists or not
     const data = await Dynamo.getList(params1);
+    console.log("data:===>", data);
     if (data.Count === 0) {
       //Add new Enrollment
       const msg = await Dynamo.createData(params);
       return formatJSONResponse({
         message: `New enrollment ${msg}`
       });
-    } else {
-      if (data.Items[0].studentid === studentid) {
+    } 
+    else {
+      var matched = 0;
+      data.Items.map(item => {
+        if(item.studentid===studentid){
+          matched = 1;
+        }
+      });
+      if (matched) {
         return formatJSONResponse({
           message: "Enrollment already exist"
         });
